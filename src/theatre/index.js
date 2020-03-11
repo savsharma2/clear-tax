@@ -1,8 +1,31 @@
 import React, { useState } from 'react';
 import Button from '../button';
+// import Tooltip from '../tooltip';
+
 
 import './style.scss';
 
+
+const Seat = ({ seat, selectedSeats, onSeatSelect }) => {
+
+    const getSeatClassName = ({ seat }) => {
+        let className = 'seat';
+        if (seat.isBooked || selectedSeats.indexOf(seat) > -1) {
+            className += ' active';
+        }
+        else if (seat.extra) {
+            className += ' extra';
+        }
+
+        return className;
+    };
+
+    return <div title={seat.extra ? `extra charges would be ${seat.extra}` : ''}
+        key={seat.number} className={getSeatClassName({ seat })}
+        onClick={onSeatSelect}>
+        {seat.number}
+    </div>;
+};
 
 const Theatre = ({ layout, numberOfSeatsToBook }) => {
     // const firstCategoryRows = layout.categories[0].rows;
@@ -44,6 +67,7 @@ const Theatre = ({ layout, numberOfSeatsToBook }) => {
     const prices = selectedCategory.price * selectedSeats.length;
 
 
+
     return (
         <div>
             <div className="theatre">
@@ -53,11 +77,10 @@ const Theatre = ({ layout, numberOfSeatsToBook }) => {
                         <div className="title"> {category.name} - Rs. {category.price} </div>
                         {rows.map(row => {
                             return <div key={row.name} className="cinema-row">
-                                {row.seats.map((seat, index) => {
-                                    const { isBooked, number } = seat;
-                                    return <div key={index} className={isBooked || selectedSeats.indexOf(seat) > -1 ? 'seat active' : 'seat'} onClick={() => { onSeatSelect({ row, seat, category }) }} >
-                                        {number}
-                                    </div>
+                                {row.seats.map((seat) => {
+                                    return <Seat seat={seat} selectedSeats={selectedSeats}
+                                        onSeatSelect={() => { onSeatSelect({ row, seat, category }) }} >
+                                    </Seat>
                                 })}
                             </div>;
                         })}
